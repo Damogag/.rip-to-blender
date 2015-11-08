@@ -81,13 +81,13 @@ def import_ninja_rip(filename, object_name):
     nshaders = readint(bytes, 24)
     nattr = readint(bytes, 28)
     
-    print("Mesh contains:     ")
+    #print("Mesh contains:     ")
     print("Faces:             " + str(nfaces))
     print("Verts:             " + str(nverts))
     print("Textures:          " + str(ntextures))
-    print("Shaders:           " + str(nshaders))
-    print("Data formatting    ")
-    print("Blocksize:         " + str(vblocksize))
+    #print("Shaders:           " + str(nshaders))
+    #print("Data formatting    ")
+    #print("Blocksize:         " + str(vblocksize))
     print("Attributes/Vertex: " + str(nattr))
     
     attributes = [[[] for j in range(nattr)] for i in range(6)]
@@ -115,6 +115,7 @@ def import_ninja_rip(filename, object_name):
     for i in range(ntextures): # read textures
         textures.append(readstring(bytes,pointer))
         pointer = next0(bytes, pointer)+1
+    print(textures)
     
     for i in range(nfaces): # read faces
         faces.append((
@@ -146,7 +147,6 @@ def import_ninja_rip(filename, object_name):
             vertex_position = vdata[i]
         if(attributes[0][i] == snorm and attributes[1][i] == 0): #check for norm data
             vertex_normal = vdata[i]
-    print(len(vdata[0][0]))
     
     #creating mesh and object
     me = bpy.data.meshes.new(object_name)
@@ -156,6 +156,8 @@ def import_ninja_rip(filename, object_name):
     bpy.context.scene.objects.active = ob
     ob.select = True
     me.from_pydata(vertex_position, [], faces)
+    for i in range(len(vertex_normal)):
+        me.vertices[i].normal = vertex_normal[i] #dunno if this works :(
     me.update(calc_edges = True)
     return 1
 
